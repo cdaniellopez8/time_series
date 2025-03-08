@@ -1,0 +1,2044 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Analisis Exploratorio de Datos - Seoul Air Quality &#8212; Trabajo final - Series de tiempo</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'EDA';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Revision Teorica: Modelos de prediccion" href="modelos.html" />
+    <link rel="prev" title="Proyecto final: Predicción de los niveles de \(NO_2\) en el aire de Seúl mediante el modelo Temporal Convolutional Network (TCN)" href="intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/uninorte.png" class="logo__image only-light" alt="Trabajo final - Series de tiempo - Home"/>
+    <script>document.write(`<img src="_static/uninorte.png" class="logo__image only-dark" alt="Trabajo final - Series de tiempo - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Proyecto final: Predicción de los niveles de NO_2 en el aire de Seúl mediante el modelo Temporal Convolutional Network (TCN)
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><strong>Analisis Exploratorio de Datos - Seoul Air Quality</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modelos.html"><strong>Revision Teorica: Modelos de prediccion</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="resultados.html"><strong>Resultados y comparacion de los modelos</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusiones.html"><strong>Conclusiones</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="bibliografia.html"><strong>Bibliografia</strong></a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2FEDA.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/EDA.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Analisis Exploratorio de Datos - Seoul Air Quality</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grafico-de-subserie-estacional"><strong>Gráfico de subserie estacional</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estacionareidad-y-prueba-de-dickey-fuller"><strong>Estacionareidad y prueba de Dickey-Fuller</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funciones-de-autocorrelacion-y-autocorrelacion-parcial"><strong>Funciones de autocorrelacion y Autocorrelacion parcial</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pruebas-de-ljung-box-acf"><strong>Pruebas de Ljung-Box - ACF</strong></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pruebas-de-ljung-box-pacf"><strong>Pruebas de Ljung-Box - PACF</strong></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="analisis-exploratorio-de-datos-seoul-air-quality">
+<h1><strong>Analisis Exploratorio de Datos - Seoul Air Quality</strong><a class="headerlink" href="#analisis-exploratorio-de-datos-seoul-air-quality" title="Link to this heading">#</a></h1>
+<hr class="docutils" />
+<div style="text-align: justify;">
+<p>A continuacion se presenta el Analisis exploratorio y descriptivo del dataset que contiene informacion de la calidad del aire de seul desde 1988 a 2021 <a class="reference external" href="https://www.kaggle.com/datasets/williamhyun/seoulairqualityhistoricdata/data">Ver dataset aqui.</a></p>
+</div><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Procedemos a cargar las librerias</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="ne">----&gt; </span><span class="mi">4</span> <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;matplotlib&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">google.colab</span><span class="w"> </span><span class="kn">import</span> <span class="n">drive</span>
+<span class="n">drive</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s1">&#39;/content/drive&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Mounted at /content/drive
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Carga del Dataset</span>
+<span class="c1">#df = pd.read_csv(r&quot;/content/seoul_air_1988_2021.csv&quot;)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Carga del Dataset</span>
+<span class="n">df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;/content/drive/MyDrive/seoul_air_1988_2021.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s2">&quot;darkgrid&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Se escoje unicamente las columnas <em><span class="math notranslate nohighlight">\(dt\)</span></em>, <em><span class="math notranslate nohighlight">\(loc\)</span></em> y <em><span class="math notranslate nohighlight">\(NO_2\)</span></em> las cuales indican el año, mes, dia y hora de medicion y los niveles de Dioxido de nitrogeno en el aire en Seul.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">[[</span><span class="s1">&#39;dt&#39;</span><span class="p">,</span><span class="s1">&#39;loc&#39;</span><span class="p">,</span><span class="s1">&#39;no2&#39;</span><span class="p">]]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Column names:&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Column names: Index([&#39;dt&#39;, &#39;loc&#39;, &#39;no2&#39;], dtype=&#39;object&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Teniendo en cuenta la totalidad de registros del dataset, se cuenta con 5984782 observaciones, sin embargo hay valores faltantes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Vemos cuantas observaciones hay en el subset</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Numero de filas y columnas: &#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Numero de filas y columnas:  (5984782, 3)
+</pre></div>
+</div>
+</div>
+</div>
+<div style="text-align: justify;">
+<p>Sin embargo estos registros no pertenecen al mismo punto de medicion, ya que estan en diferentes ubicaciones geograficas, por tanto, vamos a seleccionar el punto de medicion asociado a la locacion que tenga mas registros e identificamos que es la 124, por tanto nos quedaremos con 288.736 registros.</p>
+<div><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Queremos ver cuantos valores unicos de loc existen.</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([103, 105, 107, 108, 113, 117, 122, 124, 116, 106, 109, 110, 119,
+       123, 101, 102, 104, 121, 111, 112, 114, 115, 118, 120, 125])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Vemos que punto de medicion tiene mas datos y lo escogemos</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>count</th>
+    </tr>
+    <tr>
+      <th>loc</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>124</th>
+      <td>288736</td>
+    </tr>
+    <tr>
+      <th>113</th>
+      <td>288596</td>
+    </tr>
+    <tr>
+      <th>103</th>
+      <td>283130</td>
+    </tr>
+    <tr>
+      <th>117</th>
+      <td>282384</td>
+    </tr>
+    <tr>
+      <th>122</th>
+      <td>282372</td>
+    </tr>
+    <tr>
+      <th>108</th>
+      <td>282314</td>
+    </tr>
+    <tr>
+      <th>107</th>
+      <td>280973</td>
+    </tr>
+    <tr>
+      <th>105</th>
+      <td>279064</td>
+    </tr>
+    <tr>
+      <th>116</th>
+      <td>262952</td>
+    </tr>
+    <tr>
+      <th>102</th>
+      <td>231140</td>
+    </tr>
+    <tr>
+      <th>109</th>
+      <td>227942</td>
+    </tr>
+    <tr>
+      <th>104</th>
+      <td>227679</td>
+    </tr>
+    <tr>
+      <th>119</th>
+      <td>227180</td>
+    </tr>
+    <tr>
+      <th>121</th>
+      <td>226385</td>
+    </tr>
+    <tr>
+      <th>110</th>
+      <td>226163</td>
+    </tr>
+    <tr>
+      <th>111</th>
+      <td>225177</td>
+    </tr>
+    <tr>
+      <th>106</th>
+      <td>220962</td>
+    </tr>
+    <tr>
+      <th>123</th>
+      <td>216109</td>
+    </tr>
+    <tr>
+      <th>114</th>
+      <td>206440</td>
+    </tr>
+    <tr>
+      <th>118</th>
+      <td>205988</td>
+    </tr>
+    <tr>
+      <th>115</th>
+      <td>205481</td>
+    </tr>
+    <tr>
+      <th>112</th>
+      <td>205458</td>
+    </tr>
+    <tr>
+      <th>120</th>
+      <td>205416</td>
+    </tr>
+    <tr>
+      <th>125</th>
+      <td>205356</td>
+    </tr>
+    <tr>
+      <th>101</th>
+      <td>191385</td>
+    </tr>
+  </tbody>
+</table>
+</div><br><label><b>dtype:</b> int64</label></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">]</span><span class="o">==</span><span class="mi">124</span><span class="p">]</span>
+<span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">])</span>
+<span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(288736, 2)
+</pre></div>
+</div>
+</div>
+</div>
+<div style="text-align: justify;">
+<p>Calculamos las medidas de tendencia central y observamos que los datos son cercanos al 0, incluso vemos que el tercer cuartil del dataset es de 0.042 mientras que el valor maximo es de 0.68, muy por encima del resto de datos, incluso vemos que solo un dato se encuentra por encima de 0.4 por tanto procedemos a reemplazar esta observacion por un valor vacio para luego ser imputado.</p>
+</div><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>no2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>281839.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>0.031775</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>0.017076</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>0.019000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>0.029000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>0.042000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>0.687000</td>
+    </tr>
+  </tbody>
+</table>
+</div><br><label><b>dtype:</b> float64</label></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span> <span class="o">&gt;</span><span class="mf">0.4</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">
+  <div id="df-ee774524-15df-4af2-8ee3-39cb7ee3b1ec" class="colab-df-container">
+    <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>dt</th>
+      <th>no2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>68416</th>
+      <td>1989030822</td>
+      <td>0.687</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-ee774524-15df-4af2-8ee3-39cb7ee3b1ec')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-ee774524-15df-4af2-8ee3-39cb7ee3b1ec button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-ee774524-15df-4af2-8ee3-39cb7ee3b1ec');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+    </div>
+  </div>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># REEMPLAZAMOS LOS VALORES (1) POR ENCIMA DE 0.6 COMO NAN</span>
+<span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s1">&#39;no2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Luego de hacer esto, vemos que el total de NA encontrados es de 6898 los cuales corresponden al 2.4% de las observaciones, por lo que se procede a imputar utilizando interpolacion cuadratica.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Calculamos el numero de NA en el dataframe</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;El numero total de NA es de&#39;</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Esto corresponde al &#39;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="o">/</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">2</span><span class="p">),</span><span class="s1">&#39;% total de las observaciones&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>El numero total de NA es de 6898
+Esto corresponde al  2.39 % total de las observaciones
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Imputamos los datos faltantes con interpolacion cuadratica</span>
+
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">option</span><span class="o">=</span><span class="s1">&#39;quadratic&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Numero de datos faltantes luego de la imputacion: &#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Numero de datos faltantes luego de la imputacion:  0
+</pre></div>
+</div>
+</div>
+</div>
+<p>Tras estas imputaciones procedemos a recalcular las medidas de posicion y de tendencia central sin los valores faltantes y a graficar la distribucion de los valores de <span class="math notranslate nohighlight">\(NO_2\)</span> por hora desde 1988.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Resumen de NO2 despues de imputar</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>no2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>288736.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>0.031783</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>0.017060</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>0.019000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>0.029000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>0.042000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>0.204000</td>
+    </tr>
+  </tbody>
+</table>
+</div><br><label><b>dtype:</b> float64</label></div></div>
+</div>
+<p>La distribución parece estar sesgada o tener una cola hacia los niveles más altos de <span class="math notranslate nohighlight">\(NO_2\)</span>, lo que podría indicar la presencia de valores atípicos o eventos con concentraciones inusualmente altas. Además, el rango de concentraciones de <span class="math notranslate nohighlight">\(NO_2\)</span>, va desde 0.00 hasta 0.20 ppm siendo la mayoria de los registros menores a 0.1 0 ppm.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Graficamos la distribucion de concentraciones de NO2 en un histograma.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">5.5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">distplot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">],</span> <span class="n">norm_hist</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Distribucion de las concentraciones de NO2&#39;</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Niveles de NO2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;ipython-input-18-e63738f898ec&gt;:3: UserWarning: 
+
+`distplot` is a deprecated function and will be removed in seaborn v0.14.0.
+
+Please adapt your code to use either `displot` (a figure-level function with
+similar flexibility) or `histplot` (an axes-level function for histograms).
+
+For a guide to updating your code to use the new functions, please see
+https://gist.github.com/mwaskom/de44147ed2974457ad6372750bbe5751
+
+  g = sns.distplot(data[&#39;no2&#39;], norm_hist=False)
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 0, &#39;Niveles de NO2&#39;)
+</pre></div>
+</div>
+<img alt="_images/b3f847edcc79ca0f8570f43fb40611070b127dbf5d690f053021383fd400f3dd.png" src="_images/b3f847edcc79ca0f8570f43fb40611070b127dbf5d690f053021383fd400f3dd.png" />
+</div>
+</div>
+<p>Los puntos en el gráfico no siguen la línea diagonal de manera consistente, especialmente en ambas colas. Esto nos indica graficamente que los datos no se distribuyen de manera normal. Sin embargo comprobamos a traves de una prueba de Shapiro-Wilk que los datos no estan normalmente distribuidos.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Hacemos un grafico de cuantiles para ver si existe normalidad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.graphics.gofplots</span><span class="w"> </span><span class="kn">import</span> <span class="n">qqplot</span>
+<span class="n">qqplot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">],</span> <span class="n">line</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">get_lines</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/0b4ab50a6bfaeb458e663dbc285ea484fe28405a690cd52614bbeb056f371f4e.png" src="_images/0b4ab50a6bfaeb458e663dbc285ea484fe28405a690cd52614bbeb056f371f4e.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Comprobamos con una prueba que Los datos no son normales</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">shapiro</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Shapiro-Wilk Test:&#39;</span><span class="p">)</span>
+<span class="n">stat</span><span class="p">,</span> <span class="n">p</span> <span class="o">=</span> <span class="n">shapiro</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Statistics=</span><span class="si">%.6f</span><span class="s1">, p=</span><span class="si">%e</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">stat</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="k">if</span> <span class="n">p</span> <span class="o">&gt;</span> <span class="n">alpha</span><span class="p">:</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Sample looks Normal (fail to reject H0)&#39;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Sample does not look Normal (reject H0)&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Shapiro-Wilk Test:
+Statistics=0.949551, p=3.083672e-114
+Sample does not look Normal (reject H0)
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/usr/local/lib/python3.11/dist-packages/scipy/stats/_axis_nan_policy.py:531: UserWarning: scipy.stats.shapiro: For N &gt; 5000, computed p-value may not be accurate. Current N is 288736.
+  res = hypotest_fun_out(*samples, **kwds)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Con el fin de preparar los datos, procedemos a cambiar el formato de la fecha para poder aplicar de mejor forma los analisis y graficos de serie de tiempo y posteriormente se calculan las medias diarias y mensuales para ver el comportamiento de la variable de estudio en diferentes horizontes de tiempo.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Cambiamos el formato de la fecha</span>
+
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H&#39;</span><span class="p">)</span>
+
+<span class="c1">#establecer &#39;dt&#39; como índice</span>
+<span class="n">data</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;dt&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Se generan las medias diarias</span>
+<span class="n">daily</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">)</span>
+<span class="n">daily_mean</span> <span class="o">=</span> <span class="n">daily</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+<span class="n">monthly</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">)</span>
+<span class="n">monthly_mean</span> <span class="o">=</span> <span class="n">monthly</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;ipython-input-22-470424d8b25e&gt;:5: FutureWarning: &#39;M&#39; is deprecated and will be removed in a future version, please use &#39;ME&#39; instead.
+  monthly = data[&#39;no2&#39;].resample(&#39;M&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<div style="text-align: justify;">
+<p>En la siguiente gráfica se observan tres series superpuestas en una seccion determinada de la serie de tiempo, estas series representan diferentes niveles de agregación temporal de las concentraciones de <span class="math notranslate nohighlight">\(NO_2\)</span>. La serie graficada en azul muestra las mediciones originales de <span class="math notranslate nohighlight">\(NO_2\)</span> tomadas por hora. Se puede apreciar una alta variabilidad, con fluctuaciones significativas a lo largo del tiempo. Para suavizar la variabilidad horaria y resaltar patrones a más largo plazo, se calculó la media diaria (naranja) y mensual (rojo) de las concentraciones de <span class="math notranslate nohighlight">\(NO_2\)</span>, en esta gráfica podemos sospechar que no se encuentra una tendencia marcada pero que con las medias mensuales (rojo) se sospecha de un patrón estacional, esto será verificado mas adelante.</p>
+<p>Es importante mencionar que en la serie original (azul) no se observa alguna tendencia ya sea creciente o decreciente pero si se observan muchos picos lo que puede interpretarse como una serie con volatilidad principamente entre los valores de 0.00 ppm y 0.12 ppm.</p>
+</div><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Grafico de mediciones completas vs medias diarias</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">8.5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="n">daily_mean</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+<span class="n">monthly_mean</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Lecturas por hora (azul), media diaria (naranja) y media mensual (rojo)&#39;</span><span class="p">);</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Concentracion de NO2 [ppm]&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/dc3d600e1dadb4947693061bec8d713c13a97d277dd82df43ed2b5de3a633d19.png" src="_images/dc3d600e1dadb4947693061bec8d713c13a97d277dd82df43ed2b5de3a633d19.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#ZOOM de Grafico de mediciones completas vs medias diarias</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">8.5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">][</span><span class="mi">12</span><span class="o">*</span><span class="mi">30</span><span class="o">*</span><span class="mi">22</span><span class="p">:</span><span class="mi">30</span><span class="o">*</span><span class="mi">30</span><span class="o">*</span><span class="mi">22</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="n">daily_mean</span><span class="p">[</span><span class="mi">13</span><span class="o">*</span><span class="mi">30</span><span class="p">:</span><span class="mi">30</span><span class="o">*</span><span class="mi">30</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+<span class="n">monthly_mean</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">30</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Lecturas por hora (azul), media diaria (naranja) y media mensual (rojo)&#39;</span><span class="p">);</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Concentracion de NO2 [ppm]&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/e261b4e7e45bf66826d2f7a9da220dc25f0f9a5ceaeecfd052fdcbf233c98944.png" src="_images/e261b4e7e45bf66826d2f7a9da220dc25f0f9a5ceaeecfd052fdcbf233c98944.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Calculamos una media movil semanal con un rolling de tamaño 7 para las medias diarias</span>
+<span class="n">weekly_moving_average</span> <span class="o">=</span> <span class="n">daily_mean</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>De forma mas amplia en la siguiente grafica se puede ver todas las lecturas de concentraciones de <span class="math notranslate nohighlight">\(NO_2\)</span> por hora incluida con la media diaria, semanal y mensual.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Graficamos las lecturas segun los diferentes umbrales de tiempo</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axarr</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+
+
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axarr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+<span class="n">axarr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Lectura por hora de concentraciones de NO2&#39;</span><span class="p">);</span>
+
+<span class="n">daily_mean</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axarr</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
+<span class="n">axarr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Media diaria de concentraciones de NO2&#39;</span><span class="p">);</span>
+
+<span class="n">weekly_moving_average</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axarr</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="n">axarr</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Media semanal de concentraciones de NO2&#39;</span><span class="p">);</span>
+
+<span class="n">monthly_mean</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axarr</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">)</span>
+<span class="n">axarr</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Media mensual de concentraciones de NO2&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/fe7de14687ff63ea76c527180422d6e0abe20fdd2065f732b9979dc8fb8ce078.png" src="_images/fe7de14687ff63ea76c527180422d6e0abe20fdd2065f732b9979dc8fb8ce078.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Hacemos un zoom de los datos de NO2 con los primeros 500 datos</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">500</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: &gt;
+</pre></div>
+</div>
+<img alt="_images/38a75b12079f298ec96637934f3506b97ac8cfb8cb98da4b11b694f50bcfeb7c.png" src="_images/38a75b12079f298ec96637934f3506b97ac8cfb8cb98da4b11b694f50bcfeb7c.png" />
+</div>
+</div>
+<div style="text-align: justify;">
+<p>Se modelo la tendencia de la serie de tiempo con una regresión lineal, en esta, los residuos del modelo de tendencia aplicado a las concentraciones de <span class="math notranslate nohighlight">\(NO_2\)</span> oscilan entre 0.15 y -0.05. Es importante verificar si los residuos muestran algún patrón o autocorrelación que indique la presencia de estructura adicional no capturada por el modelo. Se recomienda realizar pruebas de autocorrelación y ruido blanco en los residuos para validar la adecuación del modelo y, en caso de ser necesario, incorporar términos adicionales como componentes estacionales o de media móvil.</p>
+</div><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ajustamos la línea de tendencia.</span>
+<span class="c1">#Para ello importamos la clase LinearRegression de scikit-learn y ajustamos un modelo lineal al índice temporal</span>
+<span class="n">trend_model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">trend_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">])</span>
+
+<span class="c1">#Coeficientes del modelo</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Trend model coefficient=</span><span class="si">{}</span><span class="s1"> and intercept=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">trend_model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">trend_model</span><span class="o">.</span><span class="n">intercept_</span><span class="p">))</span>
+
+<span class="c1"># Residuales obtenido a partir del modelo de línea de tendencia</span>
+<span class="n">residuals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="n">trend_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)))</span>
+
+<span class="c1"># Grafico de los residuales</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">5.5</span><span class="p">,</span> <span class="mf">5.5</span><span class="p">))</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">residuals</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Residuos del modelo de tendencia para las concentraciones de NO2&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Tiempo&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Concentracion de NO2&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">30</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Trend model coefficient=-1.2527556778387919e-08 and intercept=0.033591325156384674
+</pre></div>
+</div>
+<img alt="_images/6eb38916108a8fe88b6d8cb20a324a803a15a264cfd26413c46091030daffeba.png" src="_images/6eb38916108a8fe88b6d8cb20a324a803a15a264cfd26413c46091030daffeba.png" />
+</div>
+</div>
+<section id="grafico-de-subserie-estacional">
+<h2><strong>Gráfico de subserie estacional</strong><a class="headerlink" href="#grafico-de-subserie-estacional" title="Link to this heading">#</a></h2>
+<div style="text-align: justify;">
+<p>En adición a lo visto con anterioridad, se presentan las concentraciones de <span class="math notranslate nohighlight">\(NO_2\)</span> por trimestre en donde vemos que dependiendo del trimestre de medición se obtuvieron diferentes medias de concentración de <span class="math notranslate nohighlight">\(NO_2\)</span>, cabe resaltar que al tomar las medias por mes y por trimestre la serie temporal se comporta de forma diferente a si se toman los datos por hora (el cual es la serie original).</p>
+</div><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Creamos las columnas month ,year, residual y quarter para futuros analisis</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">month</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;Residuals&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">residuals</span>
+<span class="n">month_quarter_map</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;Q1&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;Q1&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;Q1&#39;</span><span class="p">,</span>
+                     <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;Q2&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;Q2&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="s1">&#39;Q2&#39;</span><span class="p">,</span>
+                     <span class="mi">7</span><span class="p">:</span> <span class="s1">&#39;Q3&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">:</span> <span class="s1">&#39;Q3&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">:</span> <span class="s1">&#39;Q3&#39;</span><span class="p">,</span>
+                     <span class="mi">10</span><span class="p">:</span> <span class="s1">&#39;Q4&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">:</span> <span class="s1">&#39;Q4&#39;</span><span class="p">,</span> <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;Q4&#39;</span><span class="p">}</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;Quarter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">month_quarter_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">m</span><span class="p">))</span>
+
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">year</span>
+
+<span class="c1"># Se calculan la media estacional y las desviaciones típicas, agrupando los datos por Year y Quarter.</span>
+
+<span class="n">seasonal_sub_series_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">,</span> <span class="s1">&#39;Quarter&#39;</span><span class="p">])[</span><span class="s1">&#39;Residuals&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">aggregate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">])</span>
+<span class="n">seasonal_sub_series_data</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Quarterly Mean&#39;</span><span class="p">,</span> <span class="s1">&#39;Quarterly Standard Deviation&#39;</span><span class="p">]</span>
+
+<span class="c1"># Creamos índices de filas de seasonal_sub_series_data utilizando Year &amp; Quarter</span>
+
+<span class="n">seasonal_sub_series_data</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">seasonal_sub_series_data</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">seasonal_sub_series_data</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">seasonal_sub_series_data</span><span class="p">[</span><span class="s1">&#39;Quarter&#39;</span><span class="p">]</span>
+<span class="n">seasonal_sub_series_data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;ipython-input-52-e99b750f1073&gt;:14: FutureWarning: The provided callable &lt;function mean at 0x7de08716eac0&gt; is currently using SeriesGroupBy.mean. In a future version of pandas, the provided callable will be used directly. To keep current behavior pass the string &quot;mean&quot; instead.
+  seasonal_sub_series_data = data.groupby(by=[&#39;Year&#39;, &#39;Quarter&#39;])[&#39;Residuals&#39;].aggregate([np.mean, np.std])
+&lt;ipython-input-52-e99b750f1073&gt;:14: FutureWarning: The provided callable &lt;function std at 0x7de08716ec00&gt; is currently using SeriesGroupBy.std. In a future version of pandas, the provided callable will be used directly. To keep current behavior pass the string &quot;std&quot; instead.
+  seasonal_sub_series_data = data.groupby(by=[&#39;Year&#39;, &#39;Quarter&#39;])[&#39;Residuals&#39;].aggregate([np.mean, np.std])
+</pre></div>
+</div>
+<div class="output text_html">
+  <div id="df-ecadd177-b5aa-4660-a96c-482adc5b4727" class="colab-df-container">
+    <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Year</th>
+      <th>Quarter</th>
+      <th>Quarterly Mean</th>
+      <th>Quarterly Standard Deviation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1988-Q1</th>
+      <td>1988</td>
+      <td>Q1</td>
+      <td>-0.000493</td>
+      <td>0.015017</td>
+    </tr>
+    <tr>
+      <th>1988-Q2</th>
+      <td>1988</td>
+      <td>Q2</td>
+      <td>-0.002120</td>
+      <td>0.015765</td>
+    </tr>
+    <tr>
+      <th>1988-Q3</th>
+      <td>1988</td>
+      <td>Q3</td>
+      <td>-0.010554</td>
+      <td>0.014644</td>
+    </tr>
+    <tr>
+      <th>1988-Q4</th>
+      <td>1988</td>
+      <td>Q4</td>
+      <td>0.000293</td>
+      <td>0.016284</td>
+    </tr>
+    <tr>
+      <th>1989-Q1</th>
+      <td>1989</td>
+      <td>Q1</td>
+      <td>0.003999</td>
+      <td>0.016259</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+    <div class="colab-df-buttons">
+
+  <div class="colab-df-container">
+    <button class="colab-df-convert" onclick="convertToInteractive('df-ecadd177-b5aa-4660-a96c-482adc5b4727')"
+            title="Convert this dataframe to an interactive table."
+            style="display:none;">
+
+  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
+    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
+  </svg>
+    </button>
+
+  <style>
+    .colab-df-container {
+      display:flex;
+      gap: 12px;
+    }
+
+    .colab-df-convert {
+      background-color: #E8F0FE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      fill: #1967D2;
+      height: 32px;
+      padding: 0 0 0 0;
+      width: 32px;
+    }
+
+    .colab-df-convert:hover {
+      background-color: #E2EBFA;
+      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+      fill: #174EA6;
+    }
+
+    .colab-df-buttons div {
+      margin-bottom: 4px;
+    }
+
+    [theme=dark] .colab-df-convert {
+      background-color: #3B4455;
+      fill: #D2E3FC;
+    }
+
+    [theme=dark] .colab-df-convert:hover {
+      background-color: #434B5C;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
+      fill: #FFFFFF;
+    }
+  </style>
+
+    <script>
+      const buttonEl =
+        document.querySelector('#df-ecadd177-b5aa-4660-a96c-482adc5b4727 button.colab-df-convert');
+      buttonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+
+      async function convertToInteractive(key) {
+        const element = document.querySelector('#df-ecadd177-b5aa-4660-a96c-482adc5b4727');
+        const dataTable =
+          await google.colab.kernel.invokeFunction('convertToInteractive',
+                                                    [key], {});
+        if (!dataTable) return;
+
+        const docLinkHtml = 'Like what you see? Visit the ' +
+          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
+          + ' to learn more about interactive tables.';
+        element.innerHTML = '';
+        dataTable['output_type'] = 'display_data';
+        await google.colab.output.renderOutput(dataTable, element);
+        const docLink = document.createElement('div');
+        docLink.innerHTML = docLinkHtml;
+        element.appendChild(docLink);
+      }
+    </script>
+  </div>
+
+
+<div id="df-707def58-76ce-47fc-8fc0-35a65897edfb">
+  <button class="colab-df-quickchart" onclick="quickchart('df-707def58-76ce-47fc-8fc0-35a65897edfb')"
+            title="Suggest charts"
+            style="display:none;">
+
+<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
+     width="24px">
+    <g>
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+    </g>
+</svg>
+  </button>
+
+<style>
+  .colab-df-quickchart {
+      --bg-color: #E8F0FE;
+      --fill-color: #1967D2;
+      --hover-bg-color: #E2EBFA;
+      --hover-fill-color: #174EA6;
+      --disabled-fill-color: #AAA;
+      --disabled-bg-color: #DDD;
+  }
+
+  [theme=dark] .colab-df-quickchart {
+      --bg-color: #3B4455;
+      --fill-color: #D2E3FC;
+      --hover-bg-color: #434B5C;
+      --hover-fill-color: #FFFFFF;
+      --disabled-bg-color: #3B4455;
+      --disabled-fill-color: #666;
+  }
+
+  .colab-df-quickchart {
+    background-color: var(--bg-color);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    fill: var(--fill-color);
+    height: 32px;
+    padding: 0;
+    width: 32px;
+  }
+
+  .colab-df-quickchart:hover {
+    background-color: var(--hover-bg-color);
+    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+    fill: var(--button-hover-fill-color);
+  }
+
+  .colab-df-quickchart-complete:disabled,
+  .colab-df-quickchart-complete:disabled:hover {
+    background-color: var(--disabled-bg-color);
+    fill: var(--disabled-fill-color);
+    box-shadow: none;
+  }
+
+  .colab-df-spinner {
+    border: 2px solid var(--fill-color);
+    border-color: transparent;
+    border-bottom-color: var(--fill-color);
+    animation:
+      spin 1s steps(1) infinite;
+  }
+
+  @keyframes spin {
+    0% {
+      border-color: transparent;
+      border-bottom-color: var(--fill-color);
+      border-left-color: var(--fill-color);
+    }
+    20% {
+      border-color: transparent;
+      border-left-color: var(--fill-color);
+      border-top-color: var(--fill-color);
+    }
+    30% {
+      border-color: transparent;
+      border-left-color: var(--fill-color);
+      border-top-color: var(--fill-color);
+      border-right-color: var(--fill-color);
+    }
+    40% {
+      border-color: transparent;
+      border-right-color: var(--fill-color);
+      border-top-color: var(--fill-color);
+    }
+    60% {
+      border-color: transparent;
+      border-right-color: var(--fill-color);
+    }
+    80% {
+      border-color: transparent;
+      border-right-color: var(--fill-color);
+      border-bottom-color: var(--fill-color);
+    }
+    90% {
+      border-color: transparent;
+      border-bottom-color: var(--fill-color);
+    }
+  }
+</style>
+
+  <script>
+    async function quickchart(key) {
+      const quickchartButtonEl =
+        document.querySelector('#' + key + ' button');
+      quickchartButtonEl.disabled = true;  // To prevent multiple clicks.
+      quickchartButtonEl.classList.add('colab-df-spinner');
+      try {
+        const charts = await google.colab.kernel.invokeFunction(
+            'suggestCharts', [key], {});
+      } catch (error) {
+        console.error('Error during call to suggestCharts:', error);
+      }
+      quickchartButtonEl.classList.remove('colab-df-spinner');
+      quickchartButtonEl.classList.add('colab-df-quickchart-complete');
+    }
+    (() => {
+      let quickchartButtonEl =
+        document.querySelector('#df-707def58-76ce-47fc-8fc0-35a65897edfb button');
+      quickchartButtonEl.style.display =
+        google.colab.kernel.accessAllowed ? 'block' : 'none';
+    })();
+  </script>
+</div>
+
+    </div>
+  </div>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+
+<span class="c1"># Primer gráfico (Concentración de NO2 por mes)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># (filas, columnas, índice de gráfico)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1974</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;no2&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;month&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Concentración de NO2 por mes&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Mes&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Concentración de NO2&#39;</span><span class="p">)</span>
+
+<span class="c1"># Segundo gráfico (Concentración de NO2 por trimestre)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># (filas, columnas, índice de gráfico)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;Year&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1974</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;no2&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;Quarter&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Concentración de NO2 por trimestre&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Trimestre&#39;</span><span class="p">)</span>
+<span class="n">g</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Concentración de NO2&#39;</span><span class="p">)</span>
+
+<span class="c1"># Muestra los gráficos</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>  <span class="c1"># Ajusta el espacio entre gráficos para que no se solapen</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/ffa4410d42b55d317d7caa8eb992af6d2e57d314c4e30b276550f16489f90738.png" src="_images/ffa4410d42b55d317d7caa8eb992af6d2e57d314c4e30b276550f16489f90738.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Comparacion de medias por trimestre</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+
+<span class="n">grouped</span> <span class="o">=</span> <span class="p">[</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;Quarter&#39;</span><span class="p">)]</span>
+
+<span class="c1"># Realizar la prueba ANOVA de un solo factor</span>
+<span class="n">f_statistic</span><span class="p">,</span> <span class="n">p_value</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">f_oneway</span><span class="p">(</span><span class="o">*</span><span class="n">grouped</span><span class="p">)</span>
+
+<span class="c1"># Mostrar los resultados</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estadístico F: </span><span class="si">{</span><span class="n">f_statistic</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Valor p: </span><span class="si">{</span><span class="n">p_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Estadístico F: 11670.487907964542
+Valor p: 0.0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="estacionareidad-y-prueba-de-dickey-fuller">
+<h2><strong>Estacionareidad y prueba de Dickey-Fuller</strong><a class="headerlink" href="#estacionareidad-y-prueba-de-dickey-fuller" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instalamos LaTex para las graficas</span>
+<span class="o">!</span>apt-get<span class="w"> </span>install<span class="w"> </span>texlive<span class="w"> </span>texlive-latex-extra<span class="w"> </span>texlive-fonts-recommended<span class="w"> </span>dvipng<span class="w"> </span>cm-super
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+cm-super is already the newest version (0.3.4-17).
+dvipng is already the newest version (1.15-1.1).
+texlive is already the newest version (2021.20220204-1).
+texlive-fonts-recommended is already the newest version (2021.20220204-1).
+texlive-latex-extra is already the newest version (2021.20220204-1).
+0 upgraded, 0 newly installed, 0 to remove and 29 not upgraded.
+</pre></div>
+</div>
+</div>
+</div>
+<div style="text-align: justify;">
+<p>El análisis de los histogramas de la serie temporal <span class="math notranslate nohighlight">\(y_{t+k}\)</span> para
+<span class="math notranslate nohighlight">\(k=0,1,2,3,4,5\)</span> sugiere que la distribución de la variable se mantiene estable a lo largo del tiempo. La forma de los histogramas no muestra cambios significativos, lo que indica una dinámica estacionaria o con baja variabilidad en su estructura. No se observa un desplazamiento evidente en la media o la dispersión de los datos, lo que sugiere que la serie no tiene tendencias marcadas ni cambios abruptos. Esto es relevante para el modelado, ya que implica que métodos estadísticos que asumen estacionalidad (La cual se confirmara con la prueba de Dickey Fuller) pueden ser adecuados para su análisis y predicción.</p>
+</div><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pandas.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">autocorrelation_plot</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;text.usetex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Activa LaTeX para los títulos</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>  <span class="c1"># Crea una cuadrícula de 3x2 gráficos</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axs</span><span class="o">.</span><span class="n">flat</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">hourly</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">:],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>  <span class="c1"># Histograma con subconjuntos de &#39;no2&#39;</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Histogram $\{y_{t+</span><span class="si">%d</span><span class="s1">}\}_{t=1}^</span><span class="si">{T}</span><span class="s1">$&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">))</span>  <span class="c1"># Título en LaTeX</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>  <span class="c1"># Ajusta la distribución de los gráficos</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>  <span class="c1"># Muestra la figura</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;text.usetex&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Desactiva LaTeX</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/ac2de0a967d19b1e477f036ae58f374a49981a780786073223c410cc37f1c1c5.png" src="_images/ac2de0a967d19b1e477f036ae58f374a49981a780786073223c410cc37f1c1c5.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa</span><span class="w"> </span><span class="kn">import</span> <span class="n">stattools</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div style="text-align: justify;">
+<p>Se desea verificar la estacionalidad de las mediciones por hora de las concentraciones de <span class="math notranslate nohighlight">\(NO_2\)</span> por lo que se realiza una prueba Dickey fuller para confirmar la estacionalidad.  En los resultados de la prueba de Dickey-Fuller para la concentración de <span class="math notranslate nohighlight">\(NO_2\)</span>, obtuvimos un valor p menor a 0.0001 sin diferenciar los datos, lo que indica que podemos rechazar la hipótesis nula de que la serie tiene una raíz unitaria (es decir, que la serie no es estacionaria) al nivel de significancia del 5%. Esto nos confirma que la serie es estacionaria.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Prueba de D. Fuller</span>
+<span class="n">adf_result</span> <span class="o">=</span> <span class="n">stattools</span><span class="o">.</span><span class="n">adfuller</span><span class="p">(</span><span class="n">hourly</span><span class="p">,</span> <span class="n">autolag</span><span class="o">=</span><span class="s1">&#39;AIC&#39;</span><span class="p">)</span>
+
+<span class="c1">#Dado que el p valor es menor al nivel de significancia se rechaza H0 en favor de la alternativa, es decir la variable es estacionaria</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;p-val of the ADF test in no2 concentration:&#39;</span><span class="p">,</span> <span class="n">adf_result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>p-val of the ADF test in no2 concentration: 0.0
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="funciones-de-autocorrelacion-y-autocorrelacion-parcial">
+<h2><strong>Funciones de autocorrelacion y Autocorrelacion parcial</strong><a class="headerlink" href="#funciones-de-autocorrelacion-y-autocorrelacion-parcial" title="Link to this heading">#</a></h2>
+<div style="text-align: justify;">
+<p>La función de autocorrelación (ACF) muestra autocorrelación significativa (En la prueba de Ljung-Box) en varios lags, lo que sugiere la presencia de una estructura de dependencia temporal en la serie. Por otro lado, la función de autocorrelación parcial (PACF) muestra autocorrelación parcial significativa en algunos lags, lo que indica la posible presencia de un componente autorregresivo (AR). La prueba de Dickey-Fuller (DF) confirma que la serie es estacionaria, lo que indica que no presenta tendencia o raíz unitaria.  Estos resultados no son contradictorios, sino que reflejan que la serie, aunque estacionaria, tiene una dependencia temporal que podría ser capturada por modelos que se presentaran a continuación.</p>
+</div><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.graphics.tsaplots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_acf</span><span class="p">,</span> <span class="n">plot_pacf</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>statsmodels<span class="w"> </span>matplotlib
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Requirement already satisfied: statsmodels in /usr/local/lib/python3.11/dist-packages (0.14.4)
+Requirement already satisfied: matplotlib in /usr/local/lib/python3.11/dist-packages (3.10.1)
+Requirement already satisfied: numpy&lt;3,&gt;=1.22.3 in /usr/local/lib/python3.11/dist-packages (from statsmodels) (1.26.4)
+Requirement already satisfied: scipy!=1.9.2,&gt;=1.8 in /usr/local/lib/python3.11/dist-packages (from statsmodels) (1.13.1)
+Requirement already satisfied: pandas!=2.1.0,&gt;=1.4 in /usr/local/lib/python3.11/dist-packages (from statsmodels) (2.2.2)
+Requirement already satisfied: patsy&gt;=0.5.6 in /usr/local/lib/python3.11/dist-packages (from statsmodels) (1.0.1)
+Requirement already satisfied: packaging&gt;=21.3 in /usr/local/lib/python3.11/dist-packages (from statsmodels) (24.2)
+Requirement already satisfied: contourpy&gt;=1.0.1 in /usr/local/lib/python3.11/dist-packages (from matplotlib) (1.3.1)
+Requirement already satisfied: cycler&gt;=0.10 in /usr/local/lib/python3.11/dist-packages (from matplotlib) (0.12.1)
+Requirement already satisfied: fonttools&gt;=4.22.0 in /usr/local/lib/python3.11/dist-packages (from matplotlib) (4.56.0)
+Requirement already satisfied: kiwisolver&gt;=1.3.1 in /usr/local/lib/python3.11/dist-packages (from matplotlib) (1.4.8)
+Requirement already satisfied: pillow&gt;=8 in /usr/local/lib/python3.11/dist-packages (from matplotlib) (11.1.0)
+Requirement already satisfied: pyparsing&gt;=2.3.1 in /usr/local/lib/python3.11/dist-packages (from matplotlib) (3.2.1)
+Requirement already satisfied: python-dateutil&gt;=2.7 in /usr/local/lib/python3.11/dist-packages (from matplotlib) (2.8.2)
+Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.11/dist-packages (from pandas!=2.1.0,&gt;=1.4-&gt;statsmodels) (2025.1)
+Requirement already satisfied: tzdata&gt;=2022.7 in /usr/local/lib/python3.11/dist-packages (from pandas!=2.1.0,&gt;=1.4-&gt;statsmodels) (2025.1)
+Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.11/dist-packages (from python-dateutil&gt;=2.7-&gt;matplotlib) (1.17.0)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">hourly</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;no2&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#calculamos diferencias de primer orden para la media mensual</span>
+<span class="n">first_order_diff</span> <span class="o">=</span><span class="n">hourly</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">first_order_diff</span><span class="o">=</span><span class="n">first_order_diff</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div style="text-align: justify;">
+<p>El análisis de la función de autocorrelación (ACF) y la autocorrelación parcial (PACF) sugiere que la serie de <span class="math notranslate nohighlight">\(NO_2\)</span> por hora presenta una fuerte dependencia temporal. La ACF de la serie original muestra un decaimiento exponencial y/o sinusoides amortiguadas, mientras que la PACF presenta un pico significativo en el primer y segundo rezago, lo que segun lo visto graficamente, un modelo auto-regresivo podría ser útil para modelar esta serie de tiempo pero debe ser confirmado con pruebas estadisticas.</p>
+</div><div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># ACF Plots</span>
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">hourly</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;ACF: NO2 por hora&#39;</span><span class="p">)</span>
+
+<span class="n">plot_acf</span><span class="p">(</span><span class="n">first_order_diff</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;ACF: NO2 por hora diferenciada 1 unidad&#39;</span><span class="p">)</span>
+
+<span class="c1">#plot_acf(second_order_diff, color=&#39;r&#39;, ax=ax[2, 0])</span>
+<span class="c1">#ax[2, 0].set_title(&#39;ACF: NO2 por hora diferenciada a 2 unidades&#39;)</span>
+
+<span class="c1"># PACF Plots</span>
+
+<span class="n">plot_pacf</span><span class="p">(</span><span class="n">hourly</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;PACF: NO2 por hora&#39;</span><span class="p">)</span>
+
+<span class="n">plot_pacf</span><span class="p">(</span><span class="n">first_order_diff</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;PACF: NO2 por hora diferenciada 1 unidad&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/2f0c6eb3a3633a708db739d918dacfd1bfa562b252577af2e845d37656e19c81.png" src="_images/2f0c6eb3a3633a708db739d918dacfd1bfa562b252577af2e845d37656e19c81.png" />
+</div>
+</div>
+<section id="pruebas-de-ljung-box-acf">
+<h3><strong>Pruebas de Ljung-Box - ACF</strong><a class="headerlink" href="#pruebas-de-ljung-box-acf" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa</span><span class="w"> </span><span class="kn">import</span> <span class="n">stattools</span>
+
+<span class="n">acf</span><span class="p">,</span> <span class="n">confint</span><span class="p">,</span> <span class="n">qstat</span><span class="p">,</span> <span class="n">pvalues</span> <span class="o">=</span> <span class="n">stattools</span><span class="o">.</span><span class="n">acf</span><span class="p">(</span><span class="n">hourly</span><span class="p">,</span>
+                                             <span class="n">nlags</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                                             <span class="n">qstat</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                             <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">p_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pvalues</span><span class="o">.</span><span class="n">flatten</span><span class="p">()):</span>
+    <span class="k">if</span> <span class="n">p_val</span> <span class="o">&gt;</span> <span class="n">alpha</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Null hypothesis is accepted at lag = </span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1"> for p-val = </span><span class="si">{</span><span class="n">p_val</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Null hypothesis is rejected at lag = </span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1"> for p-val = </span><span class="si">{</span><span class="n">p_val</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Null hypothesis is accepted at lag = 0 for p-val = 1.0
+Null hypothesis is accepted at lag = 1 for p-val = 1.0
+Null hypothesis is accepted at lag = 2 for p-val = 0.9225907974812425
+Null hypothesis is accepted at lag = 3 for p-val = 0.9298858364950736
+Null hypothesis is rejected at lag = 4 for p-val = -0.2235441100766883
+Null hypothesis is rejected at lag = 5 for p-val = -0.2162490710628572
+Null hypothesis is rejected at lag = 6 for p-val = 0.02601464456530671
+Null hypothesis is rejected at lag = 7 for p-val = 0.0333096835791378
+Null hypothesis is rejected at lag = 8 for p-val = 0.0070696734067178905
+Null hypothesis is rejected at lag = 9 for p-val = 0.014364712420548983
+Null hypothesis is accepted at lag = 10 for p-val = 0.05019846046361191
+Null hypothesis is accepted at lag = 11 for p-val = 0.057493499477443005
+Null hypothesis is accepted at lag = 12 for p-val = 0.06351809385541113
+Null hypothesis is accepted at lag = 13 for p-val = 0.0708131328692422
+Null hypothesis is accepted at lag = 14 for p-val = 0.07240394724924427
+Null hypothesis is accepted at lag = 15 for p-val = 0.07969898626307535
+Null hypothesis is accepted at lag = 16 for p-val = 0.06675344914171535
+Null hypothesis is accepted at lag = 17 for p-val = 0.07404848815554643
+Null hypothesis is accepted at lag = 18 for p-val = 0.05205812196907093
+Null hypothesis is accepted at lag = 19 for p-val = 0.05935316098290202
+Null hypothesis is rejected at lag = 20 for p-val = 0.034061910758331995
+Null hypothesis is rejected at lag = 21 for p-val = 0.04135694977216309
+Null hypothesis is rejected at lag = 22 for p-val = 0.015614924816248169
+Null hypothesis is rejected at lag = 23 for p-val = 0.02290996383007926
+Null hypothesis is rejected at lag = 24 for p-val = -0.0005419383696753763
+Null hypothesis is rejected at lag = 25 for p-val = 0.006753100644155715
+Null hypothesis is rejected at lag = 26 for p-val = -0.00840421937655238
+Null hypothesis is rejected at lag = 27 for p-val = -0.0011091803627212887
+Null hypothesis is rejected at lag = 28 for p-val = -0.014474256272992361
+Null hypothesis is rejected at lag = 29 for p-val = -0.007179217259161269
+Null hypothesis is rejected at lag = 30 for p-val = -0.00026726776096913
+Null hypothesis is rejected at lag = 31 for p-val = 0.007027771252861961
+Null hypothesis is rejected at lag = 32 for p-val = 0.014642858566700504
+Null hypothesis is rejected at lag = 33 for p-val = 0.021937897580531596
+Null hypothesis is rejected at lag = 34 for p-val = 0.03656470113317503
+Null hypothesis is rejected at lag = 35 for p-val = 0.043859740147006124
+Null hypothesis is accepted at lag = 36 for p-val = 0.06291121444721526
+Null hypothesis is accepted at lag = 37 for p-val = 0.07020625346104634
+Null hypothesis is accepted at lag = 38 for p-val = 0.07385290584849014
+Null hypothesis is accepted at lag = 39 for p-val = 0.08114794486232121
+Null hypothesis is accepted at lag = 40 for p-val = 0.08330840959667773
+Null hypothesis is accepted at lag = 41 for p-val = 0.09060344861050881
+Null hypothesis is accepted at lag = 42 for p-val = 0.07337101606734746
+Null hypothesis is accepted at lag = 43 for p-val = 0.08066605508117854
+Null hypothesis is accepted at lag = 44 for p-val = 0.0506398653424843
+Null hypothesis is accepted at lag = 45 for p-val = 0.05793490435631539
+Null hypothesis is rejected at lag = 46 for p-val = 0.006729192413982956
+Null hypothesis is rejected at lag = 47 for p-val = 0.014024231427814048
+Null hypothesis is rejected at lag = 48 for p-val = -0.061544381079742555
+Null hypothesis is rejected at lag = 49 for p-val = -0.05424934206591146
+Null hypothesis is rejected at lag = 50 for p-val = -0.09526454783017738
+Null hypothesis is rejected at lag = 51 for p-val = -0.0879695088163463
+Null hypothesis is rejected at lag = 52 for p-val = -0.07608058909462809
+Null hypothesis is rejected at lag = 53 for p-val = -0.06878555008079701
+Null hypothesis is rejected at lag = 54 for p-val = -0.04450707308773195
+Null hypothesis is rejected at lag = 55 for p-val = -0.037212034073900856
+Null hypothesis is rejected at lag = 56 for p-val = -0.02435828715187302
+Null hypothesis is rejected at lag = 57 for p-val = -0.017063248138041928
+Null hypothesis is rejected at lag = 58 for p-val = -0.013184477741276983
+Null hypothesis is rejected at lag = 59 for p-val = -0.00588943872744589
+Null hypothesis is rejected at lag = 60 for p-val = 0.0023651565426641365
+Null hypothesis is rejected at lag = 61 for p-val = 0.009660195556495228
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pruebas-de-ljung-box-pacf">
+<h3><strong>Pruebas de Ljung-Box - PACF</strong><a class="headerlink" href="#pruebas-de-ljung-box-pacf" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa</span><span class="w"> </span><span class="kn">import</span> <span class="n">stattools</span>
+
+<span class="n">pacf</span><span class="p">,</span> <span class="n">pvalues_pacf</span> <span class="o">=</span> <span class="n">stattools</span><span class="o">.</span><span class="n">pacf</span><span class="p">(</span><span class="n">hourly</span><span class="p">,</span>
+                                             <span class="n">nlags</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                                             <span class="n">alpha</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">p_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pvalues_pacf</span><span class="o">.</span><span class="n">flatten</span><span class="p">()):</span>  <span class="c1"># Convertimos a 1D si es necesario</span>
+    <span class="k">if</span> <span class="n">p_val</span> <span class="o">&gt;</span> <span class="n">alpha</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Null hypothesis is accepted at lag = </span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1"> for p-val = </span><span class="si">{</span><span class="n">p_val</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Null hypothesis is rejected at lag = </span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s1"> for p-val = </span><span class="si">{</span><span class="n">p_val</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Null hypothesis is accepted at lag = 0 for p-val = 1.0
+Null hypothesis is accepted at lag = 1 for p-val = 1.0
+Null hypothesis is accepted at lag = 2 for p-val = 0.9225907974812425
+Null hypothesis is accepted at lag = 3 for p-val = 0.9298858364950736
+Null hypothesis is rejected at lag = 4 for p-val = -0.2235441100766883
+Null hypothesis is rejected at lag = 5 for p-val = -0.2162490710628572
+Null hypothesis is rejected at lag = 6 for p-val = 0.02601464456530671
+Null hypothesis is rejected at lag = 7 for p-val = 0.0333096835791378
+Null hypothesis is rejected at lag = 8 for p-val = 0.0070696734067178905
+Null hypothesis is rejected at lag = 9 for p-val = 0.014364712420548983
+Null hypothesis is accepted at lag = 10 for p-val = 0.05019846046361191
+Null hypothesis is accepted at lag = 11 for p-val = 0.057493499477443005
+Null hypothesis is accepted at lag = 12 for p-val = 0.06351809385541113
+Null hypothesis is accepted at lag = 13 for p-val = 0.0708131328692422
+Null hypothesis is accepted at lag = 14 for p-val = 0.07240394724924427
+Null hypothesis is accepted at lag = 15 for p-val = 0.07969898626307535
+Null hypothesis is accepted at lag = 16 for p-val = 0.06675344914171535
+Null hypothesis is accepted at lag = 17 for p-val = 0.07404848815554643
+Null hypothesis is accepted at lag = 18 for p-val = 0.05205812196907093
+Null hypothesis is accepted at lag = 19 for p-val = 0.05935316098290202
+Null hypothesis is rejected at lag = 20 for p-val = 0.034061910758331995
+Null hypothesis is rejected at lag = 21 for p-val = 0.04135694977216309
+Null hypothesis is rejected at lag = 22 for p-val = 0.015614924816248169
+Null hypothesis is rejected at lag = 23 for p-val = 0.02290996383007926
+Null hypothesis is rejected at lag = 24 for p-val = -0.0005419383696753763
+Null hypothesis is rejected at lag = 25 for p-val = 0.006753100644155715
+Null hypothesis is rejected at lag = 26 for p-val = -0.00840421937655238
+Null hypothesis is rejected at lag = 27 for p-val = -0.0011091803627212887
+Null hypothesis is rejected at lag = 28 for p-val = -0.014474256272992361
+Null hypothesis is rejected at lag = 29 for p-val = -0.007179217259161269
+Null hypothesis is rejected at lag = 30 for p-val = -0.00026726776096913
+Null hypothesis is rejected at lag = 31 for p-val = 0.007027771252861961
+Null hypothesis is rejected at lag = 32 for p-val = 0.014642858566700504
+Null hypothesis is rejected at lag = 33 for p-val = 0.021937897580531596
+Null hypothesis is rejected at lag = 34 for p-val = 0.03656470113317503
+Null hypothesis is rejected at lag = 35 for p-val = 0.043859740147006124
+Null hypothesis is accepted at lag = 36 for p-val = 0.06291121444721526
+Null hypothesis is accepted at lag = 37 for p-val = 0.07020625346104634
+Null hypothesis is accepted at lag = 38 for p-val = 0.07385290584849014
+Null hypothesis is accepted at lag = 39 for p-val = 0.08114794486232121
+Null hypothesis is accepted at lag = 40 for p-val = 0.08330840959667773
+Null hypothesis is accepted at lag = 41 for p-val = 0.09060344861050881
+Null hypothesis is accepted at lag = 42 for p-val = 0.07337101606734746
+Null hypothesis is accepted at lag = 43 for p-val = 0.08066605508117854
+Null hypothesis is accepted at lag = 44 for p-val = 0.0506398653424843
+Null hypothesis is accepted at lag = 45 for p-val = 0.05793490435631539
+Null hypothesis is rejected at lag = 46 for p-val = 0.006729192413982956
+Null hypothesis is rejected at lag = 47 for p-val = 0.014024231427814048
+Null hypothesis is rejected at lag = 48 for p-val = -0.061544381079742555
+Null hypothesis is rejected at lag = 49 for p-val = -0.05424934206591146
+Null hypothesis is rejected at lag = 50 for p-val = -0.09526454783017738
+Null hypothesis is rejected at lag = 51 for p-val = -0.0879695088163463
+Null hypothesis is rejected at lag = 52 for p-val = -0.07608058909462809
+Null hypothesis is rejected at lag = 53 for p-val = -0.06878555008079701
+Null hypothesis is rejected at lag = 54 for p-val = -0.04450707308773195
+Null hypothesis is rejected at lag = 55 for p-val = -0.037212034073900856
+Null hypothesis is rejected at lag = 56 for p-val = -0.02435828715187302
+Null hypothesis is rejected at lag = 57 for p-val = -0.017063248138041928
+Null hypothesis is rejected at lag = 58 for p-val = -0.013184477741276983
+Null hypothesis is rejected at lag = 59 for p-val = -0.00588943872744589
+Null hypothesis is rejected at lag = 60 for p-val = 0.0023651565426641365
+Null hypothesis is rejected at lag = 61 for p-val = 0.009660195556495228
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><strong>Proyecto final: Predicción de los niveles de <span class="math notranslate nohighlight">\(NO_2\)</span> en el aire de Seúl mediante el modelo Temporal Convolutional Network (TCN)</strong></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="modelos.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><strong>Revision Teorica: Modelos de prediccion</strong></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grafico-de-subserie-estacional"><strong>Gráfico de subserie estacional</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#estacionareidad-y-prueba-de-dickey-fuller"><strong>Estacionareidad y prueba de Dickey-Fuller</strong></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funciones-de-autocorrelacion-y-autocorrelacion-parcial"><strong>Funciones de autocorrelacion y Autocorrelacion parcial</strong></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pruebas-de-ljung-box-acf"><strong>Pruebas de Ljung-Box - ACF</strong></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pruebas-de-ljung-box-pacf"><strong>Pruebas de Ljung-Box - PACF</strong></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Carlos Lopez Perez, Miguel Herrera Rocha
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

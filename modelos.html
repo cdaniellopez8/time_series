@@ -1,0 +1,733 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Revision Teorica: Modelos de prediccion &#8212; Trabajo final - Series de tiempo</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'modelos';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Resultados y comparacion de los modelos" href="resultados.html" />
+    <link rel="prev" title="Analisis Exploratorio de Datos - Seoul Air Quality" href="EDA.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/uninorte.png" class="logo__image only-light" alt="Trabajo final - Series de tiempo - Home"/>
+    <script>document.write(`<img src="_static/uninorte.png" class="logo__image only-dark" alt="Trabajo final - Series de tiempo - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Proyecto final: Predicción de los niveles de NO_2 en el aire de Seúl mediante el modelo Temporal Convolutional Network (TCN)
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="EDA.html"><strong>Analisis Exploratorio de Datos - Seoul Air Quality</strong></a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><strong>Revision Teorica: Modelos de prediccion</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="resultados.html"><strong>Resultados y comparacion de los modelos</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="conclusiones.html"><strong>Conclusiones</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="bibliografia.html"><strong>Bibliografia</strong></a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fmodelos.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/modelos.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Revision Teorica: Modelos de prediccion</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#suavizamiento-exponencial">Suavizamiento exponencial</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#suavizamiento-exponencial-holt-winters">Suavizamiento exponencial - Holt-Winters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arima-p-d-q">ARIMA(p,d,q)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#garch">GARCH</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modelos-de-deep-learning">Modelos de Deep-Learning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#temporal-convolutional-network">Temporal Convolutional Network</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="revision-teorica-modelos-de-prediccion">
+<h1><strong>Revision Teorica: Modelos de prediccion</strong><a class="headerlink" href="#revision-teorica-modelos-de-prediccion" title="Link to this heading">#</a></h1>
+<div style="text-align: justify;">
+<section id="suavizamiento-exponencial">
+<h2>Suavizamiento exponencial<a class="headerlink" href="#suavizamiento-exponencial" title="Link to this heading">#</a></h2>
+<p>El Suavizamiento exponencial (SE) es una técnica de series temporales que asigna mayor peso a las observaciones más recientes, reduciendo la influencia de datos más antiguos. En este estudio se utilizarán los modelos de suavización exponencial de primer y segundo orden.</p>
+<ul>
+<li><p><strong>SE(1):</strong> Este modelo se utiliza para series de tiempo sin tendencia ni estacionalidad. Ajusta los datos dando más peso a las observaciones recientes y está dado por:</p>
+<div class="math notranslate nohighlight">
+\[
+      \tilde{y}_t=\lambda y_t + (1-\lambda)\tilde{y}_{t-1}
+  \]</div>
+<p>La suavización exponencial de primer orden puede verse como una combinación lineal de la observación actual y la observación suavizada en un tiempo previo. Definiendo a <span class="math notranslate nohighlight">\(\lambda\)</span> como factor de corrección siendo <span class="math notranslate nohighlight">\(|\lambda|&lt;1\)</span>.</p>
+</li>
+<li><p><strong>SE(2):</strong> Extensión del SE(1) que incluye una componente de tendencia lineal. Dada la suavización exponencial de segundo orden definida por:</p>
+<div class="math notranslate nohighlight">
+\[
+    \tilde{y}^{(2)}_T=\lambda  \tilde{y}^{(1)}_T + (1-\lambda)\tilde{y}^{(2)}_{T-1}
+  \]</div>
+<p>Donde <span class="math notranslate nohighlight">\(\tilde{y}^{(1)}_T\)</span> y <span class="math notranslate nohighlight">\(\tilde{y}^{(2)}_T\)</span> denotan las suavizaciones exponenciales de primer y segundo orden respectivamente y el predictor de <span class="math notranslate nohighlight">\(\tilde{y}_T\)</span> está dado por:</p>
+<div class="math notranslate nohighlight">
+\[
+    \tilde{y}_T = 2\tilde{y}^{(1)}_T - \tilde{y}^{(2)}_T
+  \]</div>
+</li>
+</ul>
+</section>
+<section id="suavizamiento-exponencial-holt-winters">
+<h2>Suavizamiento exponencial - Holt-Winters<a class="headerlink" href="#suavizamiento-exponencial-holt-winters" title="Link to this heading">#</a></h2>
+<p>Los modelos de suavización de Holt-Winters son variantes del Suavizado Exponencial de Holt-Winters, que se diferencian principalmente en cómo manejan la componente estacional de la serie de tiempo. En donde SE-HW(1) es aditivo, SE-HW(2) es multiplicativo, y SE-HW(3) es una variante mixta.</p>
+<ul>
+<li><p><strong>SE-HW(1) - Holt-Winters Aditivo</strong></p>
+<p>Este modelo asume que la componente estacional es aditiva, es decir, la magnitud de la estacionalidad es constante a lo largo del tiempo. Es adecuado para series de tiempo donde la estacionalidad no depende del nivel de la serie.</p>
+<div class="math notranslate nohighlight">
+\[
+    \hat{y}_{t+h} = \ell_t + h b_t + s_{t+h-m}
+  \]</div>
+<p>Donde,</p>
+<div class="math notranslate nohighlight">
+\[
+    \ell_t = \alpha(y_t - s_{t-m}) + (1 - \alpha)(\ell_{t-1} + b_{t-1})
+  \]</div>
+<div class="math notranslate nohighlight">
+\[
+    b_t = \beta(\ell_t - \ell_{t-1}) + (1 - \beta)b_{t-1}
+  \]</div>
+<div class="math notranslate nohighlight">
+\[
+    s_t = \gamma(y_t - \ell_{t-1} - b_{t-1}) + (1 - \gamma)s_{t-m}
+  \]</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(s_t\)</span>: Componente estacional.</p></li>
+<li><p><span class="math notranslate nohighlight">\(m\)</span>: Longitud del ciclo estacional (por ejemplo, 12 para datos mensuales con estacionalidad anual).</p></li>
+<li><p><span class="math notranslate nohighlight">\(\gamma\)</span>: Parámetro de suavizado estacional.</p></li>
+</ul>
+</li>
+<li><p><strong>SE-HW(2) - Holt-Winters Multiplicativo</strong></p>
+<p>Este modelo asume que la componente estacional es multiplicativa, es decir, la magnitud de la estacionalidad varía proporcionalmente con el nivel de la serie. Es adecuado para series de tiempo donde la estacionalidad aumenta o disminuye con el nivel de la serie.</p>
+<div class="math notranslate nohighlight">
+\[
+    \hat{y}_{t+h} = (\ell_t + h b_t) \cdot s_{t+h-m}
+  \]</div>
+<div class="math notranslate nohighlight">
+\[
+    \ell_t = \alpha\left(\frac{y_t}{s_{t-m}}\right) + (1 - \alpha)(\ell_{t-1} + b_{t-1})
+  \]</div>
+<div class="math notranslate nohighlight">
+\[
+    b_t = \beta(\ell_t - \ell_{t-1}) + (1 - \beta)b_{t-1}
+  \]</div>
+<div class="math notranslate nohighlight">
+\[
+    s_t = \gamma\left(\frac{y_t}{\ell_{t-1} + b_{t-1}}\right) + (1 - \gamma)s_{t-m}
+  \]</div>
+</li>
+<li><p><strong>SE-HW(3) - Holt-Winters Mixto</strong></p>
+<p>Este modelo combina componentes aditivos y multiplicativos, permitiendo que algunas partes de la serie tengan estacionalidad aditiva y otras multiplicativa. Es útil cuando la serie de tiempo muestra un comportamiento mixto, donde la estacionalidad no es completamente aditiva ni multiplicativa.</p>
+</li>
+</ul>
+</section>
+<section id="arima-p-d-q">
+<h2>ARIMA(p,d,q)<a class="headerlink" href="#arima-p-d-q" title="Link to this heading">#</a></h2>
+<p>El modelo ARIMA combina términos autorregresivos (AR), de integración (I) y de medias móviles (MA). Se denota como ARIMA(p,d,q) y se define como:</p>
+<div class="math notranslate nohighlight">
+\[
+    \phi(B)(1-B)^dy_t=\delta+\phi(B)\epsilon_t
+\]</div>
+<p>Donde el pronóstico para un periodo <span class="math notranslate nohighlight">\(\tau\)</span> en el futuro se puede calcular como:</p>
+<div class="math notranslate nohighlight">
+\[
+  y_{T+\tau} = \mu + \sum_{i=0}^{\tau-1} \psi_i \varepsilon_{T+\tau-i} + \sum_{i=\tau}^{\infty} \psi_i \varepsilon_{T+\tau-i}
+\]</div>
+</section>
+<section id="garch">
+<h2>GARCH<a class="headerlink" href="#garch" title="Link to this heading">#</a></h2>
+<p>GARCH, por sus siglas en inglés (<em>Generalized Autoregressive Conditional Heteroskedasticity</em>), es un modelo utilizado para capturar la volatilidad en series temporales, comúnmente aplicado en datos financieros, pero también útil en problemas ambientales donde la variabilidad de la contaminación presenta heterocedasticidad condicional <span id="id1">[<a class="reference internal" href="bibliografia.html#id7" title="Akram Shavkatovich Hasanov, Robert Brooks, Sirojiddin Abrorov, and Aktam Usmanovich Burkhanov. Structural breaks and garch models of exchange rate volatility: re-examination and extension. Journal of Applied Econometrics, 39(7):1403–1407, 2024.">HBAB24</a>]</span>.</p>
+<p>El modelo <span class="math notranslate nohighlight">\(GARCH(p, q)\)</span> se define mediante dos ecuaciones: una para la media y otra para la varianza condicional.</p>
+<div class="math notranslate nohighlight">
+\[
+y_t = \mu + \epsilon_t
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\sigma_t^2 = \omega + \sum_{i=1}^p \alpha_i \epsilon_{t-i}^2 + \sum_{j=1}^q \beta_j \sigma_{t-j}^2
+\]</div>
+<p>Donde:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(y_t\)</span>: Valor de la serie en el tiempo <span class="math notranslate nohighlight">\(t\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mu\)</span>: Media incondicional de la serie.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\epsilon_t\)</span>: Término de error en el tiempo <span class="math notranslate nohighlight">\(t\)</span>, con <span class="math notranslate nohighlight">\(\epsilon_t \sim N(0, \sigma_t^2)\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\sigma_t^2\)</span>: Varianza condicional en el tiempo <span class="math notranslate nohighlight">\(t\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\omega\)</span>: Término constante (intercepto) en la ecuación de la varianza.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\alpha_i\)</span>: Coeficientes asociados a los términos <span class="math notranslate nohighlight">\(\epsilon_{t-i}^2\)</span> (efectos de los errores al cuadrado rezagados).</p></li>
+<li><p><span class="math notranslate nohighlight">\(\beta_j\)</span>: Coeficientes asociados a los términos <span class="math notranslate nohighlight">\(\sigma_{t-j}^2\)</span> (efectos de las varianzas condicionales rezagadas).</p></li>
+<li><p><span class="math notranslate nohighlight">\(p\)</span>: Orden de los términos <span class="math notranslate nohighlight">\(\epsilon_{t-i}^2\)</span> (componente ARCH).</p></li>
+<li><p><span class="math notranslate nohighlight">\(q\)</span>: Orden de los términos <span class="math notranslate nohighlight">\(\sigma_{t-j}^2\)</span> (componente GARCH).</p></li>
+</ul>
+<p>Para garantizar que la varianza condicional sea positiva y estacionaria, se imponen las siguientes restricciones:</p>
+<div class="math notranslate nohighlight">
+\[
+\omega &gt; 0, \quad \alpha_i \geq 0, \quad \beta_j \geq 0, \quad \sum_{i=1}^p \alpha_i + \sum_{j=1}^q \beta_j &lt; 1
+\]</div>
+</section>
+<section id="modelos-de-deep-learning">
+<h2>Modelos de Deep-Learning<a class="headerlink" href="#modelos-de-deep-learning" title="Link to this heading">#</a></h2>
+<p>En adición a los modelos previamente vistos, también se utilizará para comparar con el modelo escogido, 3 modelos de deep-learning los cuales son MLP, RNN y LSTM, estos se definirán a continuación.</p>
+<ul>
+<li><p><strong>MLP (Multi-Layer Perceptron):</strong> Este es el nombre de una red neuronal de propagación hacia adelante moderna que consta de neuronas totalmente conectadas con funciones de activación no lineales, organizadas en capas, que se destaca por ser capaz de distinguir datos que no son linealmente separables <span id="id2">[<a class="reference internal" href="bibliografia.html#id8" title="Ekaba Bisong. The multilayer perceptron (mlp). In Building machine learning and deep learning models on google cloud platform: A comprehensive guide for beginners, pages 401–405. Springer, 2019.">Bis19</a>]</span>. La salida de una neurona en una capa de perceptrón está dada por:</p>
+<div class="math notranslate nohighlight">
+\[
+  y = f\left(\sum_{i=1}^n w_i x_i + b\right)
+  \]</div>
+<p>Donde:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(f\)</span>: Función de activación (Por ejemplo, ReLU, sigmoide).</p></li>
+<li><p><span class="math notranslate nohighlight">\(w_i\)</span>: Pesos de la red.</p></li>
+<li><p><span class="math notranslate nohighlight">\(b\)</span>: Término de sesgo (bias).</p></li>
+<li><p><span class="math notranslate nohighlight">\(x_i\)</span>: Entradas de la red.</p></li>
+</ul>
+</li>
+<li><p><strong>RNN (Redes Neuronales Recurrentes):</strong> Es un tipo de red neuronal creada para procesar datos secuenciales como las series de tiempo, donde el orden de los elementos es importante. A diferencia de las redes neuronales de propagación hacia adelante, las RNN utilizan conexiones recurrentes, donde la salida de una neurona en un paso de tiempo se devuelve como entrada a la red en el siguiente paso de tiempo <span id="id3">[<a class="reference internal" href="bibliografia.html#id9" title="Alex Sherstinsky. Fundamentals of recurrent neural network (rnn) and long short-term memory (lstm) network. Physica D: Nonlinear Phenomena, 404:132306, 2020.">She20</a>]</span>.</p>
+<div class="math notranslate nohighlight">
+\[
+  h_t = f(W_h h_{t-1} + W_x x_t + b)
+  \]</div>
+<p>Donde:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(h_t\)</span>: Estado oculto en el tiempo <span class="math notranslate nohighlight">\(t\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(W_h\)</span>: Matriz de pesos para el estado oculto anterior.</p></li>
+<li><p><span class="math notranslate nohighlight">\(W_x\)</span>: Matriz de pesos para la entrada actual.</p></li>
+<li><p><span class="math notranslate nohighlight">\(b\)</span>: Término de sesgo.</p></li>
+<li><p><span class="math notranslate nohighlight">\(f\)</span>: Función de activación (Por ejemplo: tanh, ReLU).</p></li>
+</ul>
+</li>
+<li><p><strong>LSTM (Long-Short Term Memory):</strong> Las LSTM son una variante de las RNN diseñadas para capturar dependencias de largo plazo mediante el uso de celdas de memoria y puertas, tratando de evitar el desvanecimiento del gradiente <span id="id4">[<a class="reference internal" href="bibliografia.html#id10" title="Sima Siami-Namini, Neda Tavakoli, and Akbar Siami Namin. The performance of lstm and bilstm in forecasting time series. In 2019 IEEE International conference on big data (Big Data), 3285–3292. IEEE, 2019.">SNTN19</a>]</span>. Estas se han utilizado para el análisis de series de tiempo, por tal motivo se utilizará como modelo para comparar con el original.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+  \text{Formulación:} \begin{cases}
+  \text{Puerta de olvido: } f_t = \sigma(W_f [h_{t-1}, x_t] + b_f) \\
+  \text{Puerta de entrada: } i_t = \sigma(W_i [h_{t-1}, x_t] + b_i) \\
+  \text{Celda candidata: } \tilde{C}_t = \tanh(W_C [h_{t-1}, x_t] + b_C) \\
+  \text{Actualización de celda: } C_t = f_t \cdot C_{t-1} + i_t \cdot \tilde{C}_t \\
+  \text{Puerta de salida: } o_t = \sigma(W_o [h_{t-1}, x_t] + b_o) \\
+  \text{Estado oculto: } h_t = o_t \cdot \tanh(C_t)
+  \end{cases}
+  \end{split}\]</div>
+<p>Donde:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\sigma\)</span>: Función sigmoide.</p></li>
+<li><p><span class="math notranslate nohighlight">\(W_f, W_i, W_C, W_o\)</span>: Matrices de pesos.</p></li>
+<li><p><span class="math notranslate nohighlight">\(b_f, b_i, b_C, b_o\)</span>: Términos de sesgo.</p></li>
+<li><p><span class="math notranslate nohighlight">\(C_t\)</span>: Estado de la celda en el tiempo <span class="math notranslate nohighlight">\(t\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(h_t\)</span>: Estado oculto en el tiempo <span class="math notranslate nohighlight">\(t\)</span>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="temporal-convolutional-network">
+<h2>Temporal Convolutional Network<a class="headerlink" href="#temporal-convolutional-network" title="Link to this heading">#</a></h2>
+<p>Las redes neuronales convolucionales temporales (TCN) han surgido como una alternativa a las redes neuronales recurrentes (RNN) para el modelado de datos secuenciales, como las series de tiempo. A diferencia de las RNN, que procesan los datos de manera secuencial, las TCN utilizan convoluciones causales y dilatadas, lo que permite el procesamiento en paralelo y una mejor captura de dependencias a largo plazo sin los problemas de desvanecimiento del gradiente <span id="id5">[<a class="reference internal" href="bibliografia.html#id11" title="Colin Lea, René Vidal, Austin Reiter, and Gregory D. Hager. Temporal convolutional networks: a unified approach to action segmentation. In Gang Hua and Hervé Jégou, editors, Computer Vision – ECCV 2016 Workshops, 47–54. Cham, 2016. Springer International Publishing.">LVRH16</a>]</span>.</p>
+<p>Una TCN se compone de capas convolucionales unidimensionales que aplican filtros sobre secuencias temporales. La salida de una capa convolucional está dada por:</p>
+<div class="math notranslate nohighlight">
+\[
+y_t = \sum_{i=0}^{k-1} w_i \cdot x_{t-d \cdot i} + b
+\]</div>
+<p>donde <span class="math notranslate nohighlight">\( w_i \)</span> representa los pesos del filtro convolucional, <span class="math notranslate nohighlight">\( x_{t-d \cdot i} \)</span> es la entrada en el tiempo <span class="math notranslate nohighlight">\( t \)</span> desplazada por un factor de dilatación <span class="math notranslate nohighlight">\( d \)</span>, <span class="math notranslate nohighlight">\( k \)</span> es el tamaño del kernel y <span class="math notranslate nohighlight">\( b \)</span> es un término de sesgo.</p>
+<p><img alt="Conv1D" src="_images/conv1d.png" /></p>
+<p>Las TCN presentan dos características fundamentales que las diferencian de las redes recurrentes: <strong>Convoluciones causales</strong> las cuales garantizan que la salida en un instante <span class="math notranslate nohighlight">\( t \)</span> solo dependa de valores anteriores en la secuencia, evitando el acceso a información futura, y <strong>Convoluciones dilatadas</strong> las cuales permiten expandir el campo receptivo de la red sin aumentar significativamente el número de parámetros, facilitando la captura de patrones de largo alcance en la serie temporal.</p>
+<p><img alt="Temporal Convolutional Network" src="_images/tcn.png" /></p>
+<p>La formulación completa de una TCN con múltiples capas está dada por:</p>
+<div class="math notranslate nohighlight">
+\[
+h^{(l)}_t = \sigma \left( \sum_{i=0}^{k-1} W_i^{(l)} h^{(l-1)}_{t - d \cdot i} + b^{(l)} \right)
+\]</div>
+<p>donde <span class="math notranslate nohighlight">\(h^{(l)}_t\)</span> es la activación de la capa <span class="math notranslate nohighlight">\(l\)</span> en el tiempo <span class="math notranslate nohighlight">\(t\)</span>, <span class="math notranslate nohighlight">\(W_i^{(l)}\)</span> son los pesos del filtro convolucional en la capa <span class="math notranslate nohighlight">\(l\)</span>, <span class="math notranslate nohighlight">\(d\)</span> es el factor de dilatación, y <span class="math notranslate nohighlight">\(\sigma\)</span> es la función de activación (por ejemplo, ReLU).</p>
+<p>Además, las TCN incorporan <strong>conexiones residuales</strong>, lo que permite mejorar la estabilidad del entrenamiento y facilita la propagación del gradiente en redes profundas. La estructura final de la red se define como:</p>
+<div class="math notranslate nohighlight">
+\[
+h^{(l)}_t = \text{BatchNorm} \left( h^{(l-1)}_t + \text{Conv1D} \left( h^{(l-1)}_t \right) \right)
+\]</div>
+<p>donde <span class="math notranslate nohighlight">\(\text{BatchNorm}\)</span> representa la normalización por lotes y <span class="math notranslate nohighlight">\(\text{Conv1D}\)</span> es una capa convolucional unidimensional. Gracias a estas propiedades, las TCN han demostrado un rendimiento competitivo en tareas de predicción de series temporales, superando en muchos casos a los modelos recurrentes tradicionales no solo en resultados competitivos sino en tiempos computacionales ya que este modelo puede ser procesado de forma paralela <span id="id6">[<a class="reference internal" href="bibliografia.html#id12" title="Pedro Lara-Benítez, Manuel Carranza-García, José M. Luna-Romera, and José C. Riquelme. Temporal convolutional networks applied to energy-related time series forecasting. Applied Sciences, 2020. URL: https://www.mdpi.com/2076-3417/10/7/2322, doi:10.3390/app10072322.">LBCGLRR20</a>]</span>.</p>
+<p>En caso que el modelo tenga mas capas, el factor de dilatacion <span class="math notranslate nohighlight">\(d\)</span> esta dado por <span class="math notranslate nohighlight">\(d=2^{(n-1)}\)</span>, esta estructura queda de la siguiente forma:</p>
+<p><img alt="tcn2" src="_images/tcn2.png" /></p>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="EDA.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><strong>Analisis Exploratorio de Datos - Seoul Air Quality</strong></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="resultados.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><strong>Resultados y comparacion de los modelos</strong></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#suavizamiento-exponencial">Suavizamiento exponencial</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#suavizamiento-exponencial-holt-winters">Suavizamiento exponencial - Holt-Winters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arima-p-d-q">ARIMA(p,d,q)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#garch">GARCH</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modelos-de-deep-learning">Modelos de Deep-Learning</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#temporal-convolutional-network">Temporal Convolutional Network</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Carlos Lopez Perez, Miguel Herrera Rocha
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
