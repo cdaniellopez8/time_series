@@ -1,0 +1,316 @@
+Traceback (most recent call last):
+  File "C:\Users\CARLOS LOPEZ\anaconda3\envs\ml_venv\lib\site-packages\jupyter_cache\executors\utils.py", line 58, in single_nb_execution
+    executenb(
+  File "C:\Users\CARLOS LOPEZ\anaconda3\envs\ml_venv\lib\site-packages\nbclient\client.py", line 1319, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "C:\Users\CARLOS LOPEZ\anaconda3\envs\ml_venv\lib\site-packages\jupyter_core\utils\__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+  File "C:\Users\CARLOS LOPEZ\anaconda3\envs\ml_venv\lib\asyncio\base_events.py", line 647, in run_until_complete
+    return future.result()
+  File "C:\Users\CARLOS LOPEZ\anaconda3\envs\ml_venv\lib\site-packages\nbclient\client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "C:\Users\CARLOS LOPEZ\anaconda3\envs\ml_venv\lib\site-packages\nbclient\client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "C:\Users\CARLOS LOPEZ\anaconda3\envs\ml_venv\lib\site-packages\nbclient\client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+import statsmodels.api as sm
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from statsmodels.stats.diagnostic import acorr_ljungbox
+
+from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error, mean_absolute_error
+
+##########################
+# Funciones de preprocesamiento
+##########################
+def load_and_preprocess_data(csv_path):
+    df = pd.read_csv(csv_path)
+    data = df[['dt', 'loc', 'no2']]
+
+    # Filtrar loc=124
+    data = data[data['loc'] == 124].drop(columns=['loc'])
+
+    # Eliminar outliers extremos (1% y 99%)
+    q1, q3 = data['no2'].quantile([0.01, 0.99])
+    data = data[(data['no2'] >= q1) & (data['no2'] <= q3)]
+
+    # Interpolar valores faltantes
+    data['no2'] = data['no2'].interpolate(method='cubic')
+
+    # Convertir 'dt' a índice de tiempo
+    data['dt'] = pd.to_datetime(data['dt'].astype(str), format='%Y%m%d%H')
+    data.set_index('dt', inplace=True)
+    data_hourly = data['no2'].asfreq('H').dropna()
+
+    # División de datos
+    n = len(data_hourly)
+    train_size = int(n * 0.7)
+    val_size   = int(n * 0.15)
+
+    train = data_hourly.iloc[:train_size]
+    validation = data_hourly.iloc[train_size: train_size + val_size]
+    test = data_hourly.iloc[train_size + val_size:]
+    
+    return train, validation, test
+
+##########################
+# Modelos de Suavizado Exponencial
+##########################
+def manual_es1_rolling(train_series, test_series, alpha=0.2):
+    """
+    ES(1): Suavizado exponencial simple.
+    S_t = alpha*y_t + (1 - alpha)*S_{t-1}
+    """
+    S_prev = train_series.iloc[-1]
+    preds = []
+    for t in test_series.index:
+        yhat = S_prev
+        preds.append(yhat)
+        y_t = test_series.loc[t]
+        S_prev = alpha * y_t + (1 - alpha) * S_prev
+    return pd.Series(preds, index=test_series.index)
+
+def manual_es2_rolling(train_series, test_series, alpha=0.2, beta=0.1):
+    """
+    ES(2): Suavizado exponencial doble (aditivo).
+    L_t = alpha*y_t + (1 - alpha)*(L_{t-1} + T_{t-1})
+    T_t = beta*(L_t - L_{t-1}) + (1 - beta)*T_{t-1}
+    Pronóstico: ŷ_t = L_{t-1} + T_{t-1}
+    """
+    L_prev = train_series.iloc[-1]
+    if len(train_series) >= 2:
+        T_prev = train_series.iloc[-1] - train_series.iloc[-2]
+    else:
+        T_prev = 0
+    preds = []
+    for t in test_series.index:
+        yhat = L_prev + T_prev
+        preds.append(yhat)
+        y_t = test_series.loc[t]
+        L_new = alpha * y_t + (1 - alpha) * (L_prev + T_prev)
+        T_new = beta * (L_new - L_prev) + (1 - beta) * T_prev
+        L_prev, T_prev = L_new, T_new
+    return pd.Series(preds, index=test_series.index)
+
+def manual_eshw1_rolling(train_series, test_series, alpha=0.2, gamma=0.1, m=24):
+    """
+    ES-HW(1): Holt-Winters sin tendencia (modelo aditivo sin tendencia).
+    Nivel: L_t = alpha*(y_t - S_{t-m}) + (1 - alpha)*L_{t-1}
+    Estacionalidad: S_t = gamma*(y_t - L_t) + (1 - gamma)*S_{t-m}
+    Pronóstico: ŷ_t = L_{t-1} + S_{t-m+1}
+    """
+    if len(train_series) < m:
+        raise ValueError("Se requieren al menos m observaciones en entrenamiento.")
+    last_cycle = train_series.iloc[-m:]
+    L_prev = last_cycle.mean()
+    seasonal = list(last_cycle - L_prev)
+    preds = []
+    for i, t in enumerate(test_series.index):
+        season_idx = i % m
+        yhat = L_prev + seasonal[season_idx]
+        preds.append(yhat)
+        y_t = test_series.loc[t]
+        L_new = alpha * (y_t - seasonal[season_idx]) + (1 - alpha) * L_prev
+        S_new = gamma * (y_t - L_new) + (1 - gamma) * seasonal[season_idx]
+        L_prev = L_new
+        seasonal[season_idx] = S_new
+    return pd.Series(preds, index=test_series.index)
+
+def manual_eshw2_rolling(train_series, test_series, alpha=0.2, beta=0.1, gamma=0.1, m=24):
+    """
+    ES-HW(2): Holt-Winters aditivo con tendencia y estacionalidad.
+    Nivel: L_t = alpha*(y_t - S_{t-m}) + (1 - alpha)*(L_{t-1} + T_{t-1})
+    Tendencia: T_t = beta*(L_t - L_{t-1}) + (1 - beta)*T_{t-1}
+    Estacionalidad: S_t = gamma*(y_t - L_t - T_t) + (1 - gamma)*S_{t-m}
+    Pronóstico: ŷ_t = L_{t-1} + T_{t-1} + S_{t-m+1}
+    """
+    if len(train_series) < m+1:
+        raise ValueError("Se requieren al menos m+1 observaciones en entrenamiento.")
+    last_cycle = train_series.iloc[-m:]
+    L_prev = last_cycle.mean()
+    T_prev = (last_cycle.iloc[-1] - last_cycle.iloc[0]) / (m - 1)
+    seasonal = list(last_cycle - L_prev)
+    preds = []
+    for i, t in enumerate(test_series.index):
+        season_idx = i % m
+        yhat = L_prev + T_prev + seasonal[season_idx]
+        preds.append(yhat)
+        y_t = test_series.loc[t]
+        L_new = alpha * (y_t - seasonal[season_idx]) + (1 - alpha) * (L_prev + T_prev)
+        T_new = beta * (L_new - L_prev) + (1 - beta) * T_prev
+        S_new = gamma * (y_t - L_new - T_new) + (1 - gamma) * seasonal[season_idx]
+        L_prev, T_prev = L_new, T_new
+        seasonal[season_idx] = S_new
+    return pd.Series(preds, index=test_series.index)
+
+def manual_eshw3_rolling(train_series, test_series, alpha=0.2, beta=0.1, gamma=0.1, m=24):
+    """
+    ES-HW(3): Holt-Winters multiplicativo con tendencia y estacionalidad.
+    Nivel: L_t = alpha*(y_t / S_{t-m}) + (1 - alpha)*(L_{t-1} + T_{t-1})
+    Tendencia: T_t = beta*(L_t - L_{t-1}) + (1 - beta)*T_{t-1}
+    Estacionalidad: S_t = gamma*(y_t / (L_t + T_t)) + (1 - gamma)*S_{t-m}
+    Pronóstico: ŷ_t = (L_{t-1} + T_{t-1}) * S_{t-m+1}
+    """
+    if len(train_series) < m+1:
+        raise ValueError("Se requieren al menos m+1 observaciones en entrenamiento.")
+    last_cycle = train_series.iloc[-m:]
+    L_prev = last_cycle.mean()
+    T_prev = (last_cycle.iloc[-1] - last_cycle.iloc[0]) / (m - 1)
+    seasonal = list(last_cycle / L_prev)
+    preds = []
+    for i, t in enumerate(test_series.index):
+        season_idx = i % m
+        yhat = (L_prev + T_prev) * seasonal[season_idx]
+        preds.append(yhat)
+        y_t = test_series.loc[t]
+        L_new = alpha * (y_t / seasonal[season_idx]) + (1 - alpha) * (L_prev + T_prev)
+        T_new = beta * (L_new - L_prev) + (1 - beta) * T_prev
+        S_new = gamma * (y_t / (L_new + T_new)) + (1 - gamma) * seasonal[season_idx]
+        L_prev, T_prev = L_new, T_new
+        seasonal[season_idx] = S_new
+    return pd.Series(preds, index=test_series.index)
+
+##########################
+# Función para graficar resultados y análisis de residuos
+##########################
+def plot_model_results(train, validation, test, prediction_series, model_residuals, model_name, rmse, mape):
+    """
+    La primera gráfica muestra la comparación de datos crudos (horarios) del conjunto de 
+    entrenamiento, validación y prueba frente a las predicciones. Después se visualiza la 
+    ACF de residuales, y en la segunda figura se muestran Histograma, QQ Plot, ACF y PACF 
+    de los residuales.
+    """
+    # FIGURA 1: Predicción vs Datos Reales (DATOS HORARIOS) + ACF de los residuales
+    fig, axes = plt.subplots(1, 2, figsize=(18, 6))
+    
+    # Gráfico de Predicción vs Datos Reales (RAW)
+    axes[0].plot(train.index, train.values, label="Entrenamiento (Horario)")
+    axes[0].plot(validation.index, validation.values, label="Validación (Horario)")
+    axes[0].plot(test.index, test.values, label="Prueba (Horario)")
+    axes[0].plot(prediction_series.index, prediction_series.values, '--', label=f"Predicción (Horario) {model_name}")
+    
+    axes[0].set_title(f"Predicción vs Datos Reales - {model_name}\nRMSE: {rmse:.3f}, MAPE: {mape:.2f}%", 
+                      fontsize=12, fontweight='bold')
+    axes[0].set_xlabel("Fecha (Horaria)")
+    axes[0].set_ylabel("Valores")
+    axes[0].legend()
+    axes[0].grid(True)
+    
+    # ACF de los residuales del test (en resolución horaria, sin resample)
+    plot_acf(model_residuals.dropna(), lags=30, alpha=0.05, ax=axes[1])
+    axes[1].set_title(f"ACF Residuales (Test) - {model_name}")
+    
+    plt.tight_layout()
+    plt.show()
+    
+    # FIGURA 2: Histograma, QQ Plot, ACF y PACF de los residuales (datos horarios)
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    
+    # Histograma de los residuales
+    axes[0, 0].hist(model_residuals.dropna(), bins=30, edgecolor='black', alpha=0.7)
+    axes[0, 0].set_title(f"Histograma de Residuales - {model_name}")
+    axes[0, 0].set_xlabel("Residuales")
+    axes[0, 0].set_ylabel("Frecuencia")
+    
+    # QQ Plot de los residuales
+    sm.qqplot(model_residuals.dropna(), line='45', ax=axes[0, 1])
+    axes[0, 1].set_title(f"QQ Plot de Residuales - {model_name}")
+    
+    # ACF de los residuales
+    plot_acf(model_residuals.dropna(), lags=30, alpha=0.05, ax=axes[1, 0])
+    axes[1, 0].set_title(f"ACF de Residuales - {model_name}")
+    
+    # PACF de los residuales
+    plot_pacf(model_residuals.dropna(), lags=30, alpha=0.05, ax=axes[1, 1])
+    axes[1, 1].set_title(f"PACF de Residuales - {model_name}")
+    
+    plt.tight_layout()
+    plt.show()
+
+##########################
+# Función principal
+##########################
+def main():
+    csv_path = r"C:\Users\MIGUEL HERRERA\Downloads\seoul_air_1988_2021.csv"
+    train, validation, test = load_and_preprocess_data(csv_path)
+    
+    # Para los pronósticos "rolling" se combinan Train y Validación
+    train_val = pd.concat([train, validation])
+    
+    # Parámetros comunes
+    alpha = 0.2
+    beta = 0.1
+    gamma = 0.1
+    m = 24  # Período estacional (24 horas)
+    
+    # Obtener predicciones para cada modelo
+    models = {
+        "ES(1)": manual_es1_rolling(train_val, test, alpha=alpha),
+        "ES(2)": manual_es2_rolling(train_val, test, alpha=alpha, beta=beta),
+        "ES-HW(1)": manual_eshw1_rolling(train_val, test, alpha=alpha, gamma=gamma, m=m),
+        "ES-HW(2)": manual_eshw2_rolling(train_val, test, alpha=alpha, beta=beta, gamma=gamma, m=m),
+        "ES-HW(3)": manual_eshw3_rolling(train_val, test, alpha=alpha, beta=beta, gamma=gamma, m=m)
+    }
+    
+    # DataFrame para almacenar las métricas de cada modelo
+    metrics_list = []
+
+    # Iterar sobre cada modelo para calcular métricas y graficar resultados
+    for model_name, prediction_series in models.items():
+        # Alinear datos y calcular métricas
+        y_true, y_pred = test.align(prediction_series, join='inner')
+        mask = y_true.notnull() & y_pred.notnull()
+        y_true = y_true[mask]
+        y_pred = y_pred[mask]
+        
+        mse = mean_squared_error(y_true, y_pred)
+        rmse = np.sqrt(mse)
+        mae = mean_absolute_error(y_true, y_pred)
+        mape = mean_absolute_percentage_error(y_true, y_pred) * 100
+        
+        # Calcular residuales (observado - predicción)
+        model_residuals = y_true - y_pred
+        
+        # Ljung-Box test (p-value) usando 20 rezagos
+        lb_test = acorr_ljungbox(model_residuals.dropna(), lags=[20], return_df=True)
+        ljung_box_pvalue = lb_test['lb_pvalue'].values[0]
+
+        print(f"{model_name} -> RMSE={rmse:.3f}, MAPE={mape:.2f}%")
+        
+        # Guardamos en la lista de métricas
+        metrics_list.append({
+            "Modelo": model_name,
+            "MSE": mse,
+            "RMSE": rmse,
+            "MAE": mae,
+            "MAPE (%)": mape,
+            "LjungBox_pvalue": ljung_box_pvalue
+        })
+        
+        # Graficar resultados y análisis de residuales (datos horarios)
+        plot_model_results(train, validation, test, prediction_series, model_residuals, model_name, rmse, mape)
+
+    # Convertir la lista de métricas en un DataFrame
+    metrics_df = pd.DataFrame(metrics_list)
+    print("\nMétricas de todos los modelos:")
+    print(metrics_df)
+
+if __name__ == "__main__":
+    main()
+------------------
+
+
+[1;31m---------------------------------------------------------------------------[0m
+[1;31mModuleNotFoundError[0m                       Traceback (most recent call last)
+Cell [1;32mIn[1], line 1[0m
+[1;32m----> 1[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mnumpy[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mnp[39;00m
+[0;32m      2[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mpandas[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mpd[39;00m
+[0;32m      3[0m [38;5;28;01mimport[39;00m[38;5;250m [39m[38;5;21;01mmatplotlib[39;00m[38;5;21;01m.[39;00m[38;5;21;01mpyplot[39;00m[38;5;250m [39m[38;5;28;01mas[39;00m[38;5;250m [39m[38;5;21;01mplt[39;00m
+
+[1;31mModuleNotFoundError[0m: No module named 'numpy'
+
